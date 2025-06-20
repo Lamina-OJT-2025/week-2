@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+    <meta charset="UTF-8">
+    <title>Vehicle Damage Detection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0B0C10;
+            color:rgb(240, 240, 240);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .main-card {
+            background: #1F2833;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(31,40,51,0.37);
+            padding: 40px 30px 30px 30px;
+            max-width: 1100px;
+            margin: 60px auto 0 auto;
+        }
+        .form-control {
+            background-color: rgb(240, 240, 240);
+            color: #1F2833;
+            border: 2px solid #1F2833;
+            border-radius: 8px;
+        }
+        .form-control::file-selector-button {
+            background-color: #1F2833;
+            color: rgb(240, 240, 240);
+            border: 2px solid rgb(240, 240, 240);
+            border-radius: 6px;
+            padding: 6px 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .form-control::file-selector-button:hover {
+            color: #1F2833 !important;
+            background-color: #1F2833;
+            border: 2px solid rgb(240, 240, 240);
+        }
+        h2 {
+            color: rgb(240, 240, 240);
+            font-size: 3rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        h5 {
+            color:rgb(182, 182, 182);
+            font-weight: 400;
+            margin-bottom: 30px;
+        }
+        .btn-primary {
+            background-color: rgb(240, 240, 240);
+            color: #0B0C10;
+            border: none;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: background 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: rgb(240, 240, 240);
+            color: #fff;
+        }
+        .upload-section {
+            border: 2px dashed rgb(240, 240, 240);
+            border-radius: 12px;
+            padding: 30px 20px;
+            background: #1F2833;
+            margin-bottom: 30px;
+        }
+        .row {
+            display: flex;
+            gap: 30px;
+        }
+        .column {
+            flex: 1;
+            padding: 0 10px;
+        }
+        .media-title {
+            color: rgb(240, 240, 240);
+            font-size: 1.2rem;
+            margin: 20px 0 10px 0;
+            font-weight: 600;
+        }
+        .fixed-size {
+            width: 100%;
+            max-width: 500px;
+            max-height: 350px;
+            border: 2px solid rgb(240, 240, 240);
+            border-radius: 10px;
+            background: #0B0C10;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px 0 rgba(69,162,158,0.15);
+            object-fit: contain;
+        }
+        @media (max-width: 900px) {
+            .main-card { padding: 20px 5px; }
+            .row { flex-direction: column; gap: 0; }
+            .column { padding: 0; }
+        }
+        #loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 12, 16, 0.8);
+            color: rgb(240, 240, 240);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .spinner {
+            border: 8px solid #1F2833;
+            border-top: 8px solid rgb(240, 240, 240);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-card">
+        <h2>Vehicle Damage Detector</h2>
+        <h5> (PNG, JPG, JPEG, MP4)</h5>
+        <div class="upload-section">
+            <form method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <input class="form-control" type="file" name="media" accept=".png,.jpg,.jpeg,.mp4" multiple required>
+                </div>
+                <button class="btn btn-primary" type="submit">Upload</button>
+            </form>
+        </div>
+        <div class="row">
+                <div id="loading-overlay">
+            <div class="spinner"></div>
+        </div>
+            <div class="column">
+                {% if file_urls %}
+                    {% for file_url in file_urls %}
+                        {% if file_url.endswith('.mp4') %}
+                            <div class="media-title">Uploaded Video:</div>
+                            <video controls class="fixed-size">
+                                <source src="{{ file_url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        {% else %}
+                            <div class="media-title">Uploaded Photo:</div>
+                            <img src="{{ file_url }}" alt="Uploaded Image" class="fixed-size">
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="column">
+                {% if damage_detected_urls %}
+                    {% for damage_url in damage_detected_urls %}
+                        {% if damage_url.endswith('.mp4') %}
+                            <div class="media-title">Damage Detected Video:</div>
+                            <video controls class="fixed-size">
+                                <source src="{{ damage_url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        {% else %}
+                            <div class="media-title">Damage Detected Photo:</div>
+                            <img src="{{ damage_url }}" alt="Damage Detected Image" class="fixed-size">
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const overlay = document.getElementById('loading-overlay');
+    if (form && overlay) {
+        form.addEventListener('submit', function() {
+            overlay.style.display = 'flex';
+        });
+    }
+});
+</script>
+</html>
